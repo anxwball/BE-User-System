@@ -3,25 +3,25 @@ from app.repos.base import UserRepository
 
 class UserRepositorySQLite(UserRepository):
     def __init__(self, db_path: str):
-        self._conn = sqlite3.connect(db_path)
+        self._db_path = db_path
         self._create_table()
 
-    def _get_cursor(self):
-        return self._conn.cursor()
-    
-    def _execute(self, query: str, params = None, commit = False):
-        cursor = self._get_cursor()
-        
+    def _execute(self, query: str, params=None, commit: bool = False, fetchone: bool = False, fetchall: bool = False):
         if params is None:
             params = ()
-        
-        cursor.execute(query, params)
-
-        if commit:
-            self._conn.commit()
-        
-        return cursor
-
+        conn = sqlite3.connect(self._db_path)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            if commit:
+                conn.commit()
+            if fetchone:
+                return cursor.fetchone()
+            if fetchall:
+                return cursor.fetchall()
+            return None
+        finally:
+            conn.close()
 
     def _create_table(self):
         self._execute(
@@ -30,13 +30,13 @@ class UserRepositorySQLite(UserRepository):
         )
 
     def exists(self, email: str) -> bool:
-        cursor = self._execute(
+        row = self._execute(
             "SELECT 1 FROM users WHERE email = ?",
-            (email,)
+            (email,),
+            fetchone=True
         )
+        return row is not None
 
-        return cursor.fetchone() is not None
-    
     def save(self, user) -> None:
         self._execute(
             "INSERT INTO users (email) VALUES (?)",
