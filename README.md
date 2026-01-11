@@ -30,19 +30,19 @@ The system follows the Clean Architecture principles:
          ┌─────────────┐
          │   FastAPI   │  ← HTTP / JWT
          └──────┬──────┘
-                 │
+                │
          ┌──────▼──────┐
          │ Application │  ← Dependency Injection
          └──────┬──────┘
-                 │
+                │
          ┌──────▼──────┐
          │   Domain    │  ← Business Rules
          └──────┬──────┘
-                 │
-     ┌─────────▼─────────┐
-     │ Repositories      │
-     │ (Memory / SQLite) │
-     └───────────────────┘
+                │
+      ┌─────────▼─────────┐
+      │ Repositories      │
+      │ (Memory / SQLite) │
+      └───────────────────┘
 ```
 
 ## Technical Desicions
