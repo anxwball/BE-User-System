@@ -1,14 +1,11 @@
 from fastapi import Depends, FastAPI, HTTPException
-from pydantic import BaseModel
 
 from app.core.container import Container
+from app.api.schemas import UserCreateDTO, UserResponseDTO
 from app.core.exceptions import UserAlreadyExists
 
 app = FastAPI()
 container = Container("app/schemas/users.db")
-
-class UserCreate(BaseModel):
-    email: str
 
 def get_user_service():
     return container.user_service()
@@ -16,9 +13,12 @@ def get_user_service():
 def get_user_repo():
     return container.user_repo()
 
-@app.post("/users", status_code=201)
+@app.post("/users", 
+          status_code=201,
+          response_model=UserResponseDTO
+          )
 def create_user(
-    payload: UserCreate,
+    payload: UserCreateDTO,
     service = Depends(get_user_service),
     repo = Depends(get_user_repo)
 ):
@@ -26,7 +26,7 @@ def create_user(
         user = service.register_user(payload.email)
         repo.save(user)
         
-        return {"email": user.email}
+        return UserResponseDTO(email = user.email)
     except UserAlreadyExists as exc:
         raise HTTPException(
             status_code=409,
