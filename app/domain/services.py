@@ -8,7 +8,7 @@ class UserService:
 
     def register_user(self, email:str) -> User:
         if self.repository.exists(email):
-            raise UserAlreadyExists()
+            raise UserAlreadyExists(email)
         
         user = User(id=uuid4(), email=email)
         return user
