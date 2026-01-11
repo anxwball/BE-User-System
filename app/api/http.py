@@ -1,4 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
+import sys
+import tempfile
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.auth import get_current_user_email
@@ -8,7 +10,12 @@ from app.core.exceptions import UserAlreadyExists
 from app.core.security import create_access_token
 
 app = FastAPI()
-container = Container("app/schemas/users.db")
+
+if "pytest" in sys.modules:
+    _tmp_db = tempfile.NamedTemporaryFile(delete=False)
+    container = Container(_tmp_db.name)
+else:
+    container = Container("app/schemas/users.db")
 
 def get_user_service():
     return container.user_service()
