@@ -10,7 +10,7 @@ The project objective is to demonstrate architecture desingn concepts:
 
 ## Problem Statement
 
-Register users securely and consistently, ensuring:
+Create a User Registration API that allows users to register with their email. The system should be designed to be maintainable, testable, and adaptable to change.
 
 - Centralized bussiness logic
 - Persistence changeability
