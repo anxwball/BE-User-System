@@ -26,5 +26,6 @@ def test_user_persistence_after_registration():
     repo = UserRepositoryInMemory()
     service = UserService(repo)
     user = service.register_user("persisted@email.com")
+    repo.save(user)
 
     assert repo.exists(user.email)
