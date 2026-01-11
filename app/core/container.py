@@ -9,4 +9,4 @@ class Container:
         return UserRepositorySQLite(self._db_path)
     
     def user_service(self):
-        return UserService(self.user_repo)
+        return UserService(self.user_repo())
