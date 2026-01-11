@@ -1,9 +1,13 @@
 import sqlite3
+import os
 from app.repos.base import UserRepository
 
 class UserRepositorySQLite(UserRepository):
     def __init__(self, db_path: str):
         self._db_path = db_path
+        dirpath = os.path.dirname(self._db_path)
+        if dirpath and not os.path.exists(dirpath):
+            os.makedirs(dirpath, exist_ok=True)
         self._create_table()
 
     def _execute(self, query: str, params=None, commit: bool = False, fetchone: bool = False, fetchall: bool = False):

@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--email", required=True)
     
     args = parser.parse_args()  
-    repository = UserRepositorySQLite("users.db")
+    repository = UserRepositorySQLite("app/schemas/users.db")
     service = UserService(repository)
     
     try:
