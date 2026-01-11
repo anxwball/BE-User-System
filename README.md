@@ -26,22 +26,24 @@ The system follows the Clean Architecture principles:
 - The infrastructure layer can be swapped without affecting the domain.
 - The adapters translate, they don't make decisions.
 
-        ┌─────────────┐
-        │   FastAPI   │  ← HTTP / JWT
-        └──────┬──────┘
-               │
-        ┌──────▼──────┐
-        │ Application │  ← Dependency Injection
-        └──────┬──────┘
-               │
-        ┌──────▼──────┐
-        │   Domain    │  ← Business Rules
-        └──────┬──────┘
-               │
+```txt
+         ┌─────────────┐
+         │   FastAPI   │  ← HTTP / JWT
+         └──────┬──────┘
+                 │
+         ┌──────▼──────┐
+         │ Application │  ← Dependency Injection
+         └──────┬──────┘
+                 │
+         ┌──────▼──────┐
+         │   Domain    │  ← Business Rules
+         └──────┬──────┘
+                 │
      ┌─────────▼─────────┐
      │ Repositories      │
      │ (Memory / SQLite) │
      └───────────────────┘
+```
 
 ## Technical Desicions
 
