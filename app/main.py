@@ -3,8 +3,7 @@ import argparse
 from app.core.config import load_settings
 from app.core.logging import config_logging, get_logger
 
-from app.domain.services import UserService
-from app.repos.sqlite import UserRepositorySQLite
+from app.core.container import Container
 from app.core.exceptions import UserAlreadyExists
 
 def main():
@@ -19,14 +18,14 @@ def main():
     parser.add_argument("--email", required=True)
     
     args = parser.parse_args()  
-    repository = UserRepositorySQLite("app/schemas/users.db")
-    service = UserService(repository)
+    container = Container("app/schemas/users.db")
+    repo = container.user_repo()
+    service = container.user_service()
     
     try:
         user = service.register_user(args.email)
-        
-        repository.save(user)
-        
+        repo.save(user)
+
         logger.info("User created: %s", user.email)
     except UserAlreadyExists:
         logger.warning("Attempt to register duplicate user: %s", args.email)
