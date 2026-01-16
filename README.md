@@ -37,13 +37,13 @@ py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-2. Install dependencies:
+1. Install dependencies:
 
 ```powershell
 py -m pip install -r requirements.txt
 ```
 
-3. Start the API (development server):
+1. Start the API (development server):
 
 ```powershell
 # Preferred: run the module that contains the FastAPI app
@@ -68,6 +68,7 @@ container = Container(settings)
 ```
 
 Key environment variables:
+
 - `APP_ENV` — environment name (defaults to `development`)
 - `SECRET_KEY` — secret signing key for JWT tokens (recommended to set in production)
 - `DB_PATH` — path to the SQLite database file (defaults to `app/schemas/users.db`)
@@ -80,7 +81,7 @@ copy .env.example .env
 
 For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-4. Run tests:
+1. Run tests:
 
 ```powershell
 py -m pytest -q

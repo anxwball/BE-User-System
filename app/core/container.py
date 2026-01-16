@@ -7,8 +7,6 @@ Provide factory methods to obtain repository and service instances.
 from app.domain.services import UserService
 from app.repos.sqlite import UserRepositorySQLite
 from app.core.config import Settings
-from typing import Union, Optional
-
 
 class Container:
     """Provide application wiring for tests and runtime.
