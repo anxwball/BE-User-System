@@ -1,29 +1,39 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from jose import jwt, JWTError
-from dotenv import load_dotenv
-from pytz import timezone
 
 from app.core.config import get_module_secret
 
-load_dotenv()
-
-SECURITY_SECRET_KEY = get_module_secret("SECURITY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:
-    expire = datetime.now(timezone('UTC')) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+
+def _ensure_secret(secret_key: Optional[str]) -> str:
+    if secret_key:
+        return secret_key
+    return get_module_secret("SECURITY")
+
+
+def create_access_token(subject: str, secret_key: Optional[str] = None, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a JWT for `subject` using `secret_key` (injected).
+
+    If `secret_key` is not provided, fall back to the module-secret lookup.
+    The `exp` claim is emitted as an integer UNIX timestamp for broad compatibility.
+    """
+    secret = _ensure_secret(secret_key)
+    expire_dt = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     payload = {
         "sub": subject,
-        "exp": expire
+        "exp": int(expire_dt.timestamp())
     }
-    return jwt.encode(payload, SECURITY_SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload, secret, algorithm=ALGORITHM)
 
-def decode_access_token(token: str) -> str:
+
+def decode_access_token(token: str, secret_key: Optional[str] = None) -> str:
     try:
-        payload = jwt.decode(token, SECURITY_SECRET_KEY, algorithms=[ALGORITHM])
+        secret = _ensure_secret(secret_key)
+        payload = jwt.decode(token, secret, algorithms=[ALGORITHM])
         return payload["sub"]
     except JWTError:
         raise ValueError("Invalid token")

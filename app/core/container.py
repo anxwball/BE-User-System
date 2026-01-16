@@ -6,6 +6,8 @@ Provide factory methods to obtain repository and service instances.
 
 from app.domain.services import UserService
 from app.repos.sqlite import UserRepositorySQLite
+from app.core.config import Settings
+from typing import Union
 
 
 class Container:
@@ -15,15 +17,22 @@ class Container:
     factories that create new instances on demand.
     """
 
-    def __init__(self, db_path: str):
-        self._db_path = db_path
+    def __init__(self, settings: Union[Settings, str]):
+        """Initialize the container with a `Settings` instance or a legacy db_path string.
 
-    def user_repo(self):
+        Passing a `Settings` object is preferred (it includes `db_path`).
+        """
+        if isinstance(settings, str):
+            self._db_path = settings
+        else:
+            self._db_path = settings.db_path
+
+    def user_repo(self) -> UserRepositorySQLite:
         """Return a new `UserRepositorySQLite` instance bound to `db_path`."""
 
         return UserRepositorySQLite(self._db_path)
 
-    def user_service(self):
+    def user_service(self) -> UserService:
         """Return a new `UserService` using the repository factory."""
 
         return UserService(self.user_repo())

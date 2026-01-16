@@ -10,12 +10,14 @@ class Settings:
     env: str
     debug: bool
     secret_key: Optional[str] = None
+    db_path: str = "app/schemas/users.db"
 
 def load_settings() -> Settings:
     env = os.getenv("APP_ENV", "development")
     debug = env != "production"
     secret_key = os.getenv("SECRET_KEY")
-    return Settings(env=env, debug=debug, secret_key=secret_key)
+    db_path = os.getenv("DB_PATH", "app/schemas/users.db")
+    return Settings(env=env, debug=debug, secret_key=secret_key, db_path=db_path)
 
 
 def get_module_secret(module_name: str) -> str:
