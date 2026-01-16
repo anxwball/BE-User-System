@@ -53,6 +53,33 @@ uvicorn app.api.http:app --reload
 uvicorn app.main:app --reload
 ```
 
+### Configuration
+
+This project uses an explicit `Settings` dataclass (`app.core.config.Settings`) as
+the single source of configuration. Applications should call `load_settings()` and
+pass the returned `Settings` instance into the `Container`:
+
+```python
+from app.core.config import load_settings
+from app.core.container import Container
+
+settings = load_settings()
+container = Container(settings)
+```
+
+Key environment variables:
+- `APP_ENV` — environment name (defaults to `development`)
+- `SECRET_KEY` — secret signing key for JWT tokens (recommended to set in production)
+- `DB_PATH` — path to the SQLite database file (defaults to `app/schemas/users.db`)
+
+A `.env.example` file is provided at the repository root. Copy it to `.env` and adjust values during local development:
+
+```powershell
+copy .env.example .env
+```
+
+For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 4. Run tests:
 
 ```powershell
@@ -116,6 +143,9 @@ Run all tests:
 ```powershell
 py -m pytest -q
 ```
+
+Notes for Windows: temporary files used in SQLite tests may be briefly locked
+by the runtime; tests include a small retry loop on cleanup to reduce flakiness.
 
 ## Project layout
 

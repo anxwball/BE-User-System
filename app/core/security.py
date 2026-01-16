@@ -25,6 +25,9 @@ def create_access_token(subject: str, secret_key: Optional[str] = None, expires_
     expire_dt = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     payload = {
         "sub": subject,
+        # Emit `exp` as an integer UNIX timestamp (seconds since epoch).
+        # Using timezone-aware UTC datetimes avoids ambiguity when parsing
+        # tokens in different environments.
         "exp": int(expire_dt.timestamp())
     }
     return jwt.encode(payload, secret, algorithm=ALGORITHM)

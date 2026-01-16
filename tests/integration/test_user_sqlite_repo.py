@@ -18,7 +18,19 @@ def test_user_persistence_in_sqlite():
 
         assert repo.exists(user.email)
     finally:
-        os.remove(db_path)
+        # On Windows the temporary file can be locked briefly; retry removal.
+        import time, gc
+
+        for _ in range(5):
+            try:
+                os.remove(db_path)
+                break
+            except PermissionError:
+                gc.collect()
+                time.sleep(0.1)
+        else:
+            # If still failing, re-raise for visibility
+            os.remove(db_path)
 
 
 def test_register_user_duplicate_email_with_sqlite():
@@ -34,7 +46,17 @@ def test_register_user_duplicate_email_with_sqlite():
         with pytest.raises(UserAlreadyExists):
             service.register_user("sqlitedup@email.com")
     finally:
-        os.remove(db_path)
+        import time, gc
+
+        for _ in range(5):
+            try:
+                os.remove(db_path)
+                break
+            except PermissionError:
+                gc.collect()
+                time.sleep(0.1)
+        else:
+            os.remove(db_path)
 
 def test_empty_sqlite_repository_starts_clean():
     with tempfile.NamedTemporaryFile(delete=False) as db_file:
@@ -45,4 +67,14 @@ def test_empty_sqlite_repository_starts_clean():
 
         assert not repo.exists("nobody@example.com")
     finally:
-        os.remove(db_path)
+        import time, gc
+
+        for _ in range(5):
+            try:
+                os.remove(db_path)
+                break
+            except PermissionError:
+                gc.collect()
+                time.sleep(0.1)
+        else:
+            os.remove(db_path)

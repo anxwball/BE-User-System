@@ -7,6 +7,13 @@ load_dotenv()
 
 @dataclass(frozen=True)
 class Settings:
+    """Immutable application settings.
+
+    Use `load_settings()` to construct a `Settings` instance from the
+    environment. The dataclass is frozen to ensure configuration is a
+    single source of truth and cannot be mutated at runtime.
+    """
+
     env: str
     debug: bool
     secret_key: Optional[str] = None
