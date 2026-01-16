@@ -1,117 +1,89 @@
-# BE: Clean Architecture - User Registration API
+# BE: Clean Architecture — User Registration API
 
-This project is a simple backend User Registration API built using the **Clean Architecture** principles, **responsability separation** and **testability** in mind.
+A small, well-tested User Registration API demonstrating Clean Architecture principles, separation of concerns, and easy testability.
 
-The project objective is to demonstrate architecture desingn concepts:
+Key goals:
 
-- Pure Domain Layer
-- Changeable Infrastructure Layer
-- External Adapters (HTTP, Database, CLI)
+- Keep business rules independent from frameworks and infrastructure.
+- Make persistence replaceable (memory / SQLite) without changing domain code.
+- Provide a clear, testable HTTP adapter (FastAPI) and decoupled authentication.
 
-## Problem Statement
+## Problem
 
-Create a User Registration API that allows users to register with their email. The system should be designed to be maintainable, testable, and adaptable to change.
+Implement a maintainable, testable User Registration API where users can register with an email address. The system should emphasize:
 
-- Centralized bussiness logic
-- Persistence changeability
-- documented HTTP API
-- Decoupled authentication
-- Multiple-layer testing
+- Centralized business rules
+- Swap-able persistence
+- Documented HTTP surface
+- Authentication decoupled from domain logic
+- Layered testing (unit, integration, API)
 
 ## Architecture Overview
 
-The system follows the Clean Architecture principles:
-
-- The domain doesn't depend on any frameworks.
-- The infrastructure layer can be swapped without affecting the domain.
-- The adapters translate, they don't make decisions.
+The project follows Clean Architecture: the domain layer has no framework dependencies; infrastructure and adapters can be replaced independently.
 
 ```txt
-         ┌─────────────┐
-         │   FastAPI   │  ← HTTP / JWT
-         └──────┬──────┘
-                │
-         ┌──────▼──────┐
-         │ Application │  ← Dependency Injection
-         └──────┬──────┘
-                │
-         ┌──────▼──────┐
-         │   Domain    │  ← Business Rules
-         └──────┬──────┘
-                │
+      ┌─────────────┐
+      │   FastAPI   │  ← HTTP / JWT
+      └──────┬──────┘
+          │
+      ┌──────▼──────┐
+      │ Application │  ← Dependency Injection
+      └──────┬──────┘
+          │
+      ┌──────▼──────┐
+      │   Domain    │  ← Business Rules
+      └──────┬──────┘
+          │
       ┌─────────▼─────────┐
       │ Repositories      │
       │ (Memory / SQLite) │
       └───────────────────┘
 ```
 
-## Technical Desicions
+## Design Decisions
 
-### Pure Domain Layer
-
-- It doesn't depend on FastAPI, SQLite or JWT
-- 100% test coverage with unit tests
-
-### Changeable Infrastructure Layer
-
-- Repositories implemented with in-memory and SQLite
-- Same contracts, it won't affect the domain
-
-### Decoupled Authentication
-
-- JWT handled in FastAPI layer
-- Domain unaware of authentication mechanism
-
-### External Validation
-
-- DTO validation with Pydantic in FastAPI layer
-- Domain receives already validated data
-
-### Dependency Injection
-
-- Simple manual DI in FastAPI layer
-- Clean overrides for testing
+- Pure domain: the domain layer does not depend on FastAPI, SQLite, or JWT.
+- Changeable infrastructure: repository implementations (in-memory and SQLite) follow the same contract.
+- Decoupled authentication: JWT is handled in the HTTP layer; the domain is unaware of auth details.
+- External validation: Pydantic validates DTOs in the HTTP layer; domain receives already-validated data.
+- Dependency injection: simple manual DI in the application layer with test-friendly overrides.
 
 ## Testing Strategy
 
-- Unit Tests for Domain Layer (100% coverage)
-- Integration Tests for Application Layer
-- Tests for dependency container
-- API tests for HTTP endpoints
+- Unit tests: domain logic covered thoroughly.
+- Integration tests: verify repository and application wiring.
+- API tests: ensure HTTP endpoints behave as expected.
 
-All tests validate behavior, not implementation details.
+All tests assert behavior rather than internal implementation details.
 
-## How to Run
+## Getting Started
 
 1. Install dependencies:
-        ```bash
-            pip install -r requirements.txt
-        ```
+
+```bash
+pip install -r requirements.txt
+```
 
 2. Run the FastAPI server:
-        ```bash
-            uvicorn app.main:app --reload
-        ```
+
+```bash
+uvicorn app.main:app --reload
+```
 
 3. Run tests:
-        ```bash
-            py -m pytest
-        ```
 
-## Conclusion
+```bash
+py -m pytest
+```
 
-In this project, I have learned and applied Clean Architecture principles to build a User Registration API that is maintainable, testable, and adaptable to change. The separation of concerns allows for easy modifications and enhancements in the future. Some difficulties were faced in ensuring complete decoupling between layers, but these were overcome through careful design, rethinking, and iterative testing. Overall, this project serves as a solid foundation for me to build more complex systems and leave room for future improvements.
+## Future Work
 
-Feel free to explore the codebase and reach out if you have any questions or suggestions!
-
-## Future Improvements
-
-- Add frontend interface
-- Implement more authentication methods
-- Expand test coverage to integration tests
-- Containerize the application with Docker
-- Implement CI/CD pipeline for automated testing and deployment
+- Add a simple frontend for registration
+- Support additional authentication methods
+- Expand integration and end-to-end test coverage
+- Containerize with Docker and add CI/CD
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 — see the [LICENSE](LICENSE) file for details.
