@@ -32,8 +32,8 @@ class UserRepositorySQLite(UserRepository):
 
         if params is None:
             params = ()
-        conn = sqlite3.connect(self._db_path)
-        try:
+        # Use connection context manager to ensure commit/rollback semantics
+        with sqlite3.connect(self._db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(query, params)
             if commit:
@@ -43,8 +43,6 @@ class UserRepositorySQLite(UserRepository):
             if fetchall:
                 return cursor.fetchall()
             return None
-        finally:
-            conn.close()
 
     def _create_table(self):
         """Create the `users` table if it does not exist."""
@@ -71,8 +69,16 @@ class UserRepositorySQLite(UserRepository):
         """
 
         # Persist both id and email. UUIDs are stored as text.
-        self._execute(
-            "INSERT INTO users (id, email) VALUES (?, ?)",
-            (str(user.id), user.email),
-            commit=True
-        )
+        try:
+            self._execute(
+                "INSERT INTO users (id, email) VALUES (?, ?)",
+                (str(user.id), user.email),
+                commit=True
+            )
+        except sqlite3.IntegrityError as exc:
+            # Map DB uniqueness/constraint errors to a domain error
+            from app.core.exceptions import UserAlreadyExists
+
+            # If the integrity error is for the unique email constraint,
+            # raise a domain-level `UserAlreadyExists` so callers can react.
+            raise UserAlreadyExists(user.email) from exc

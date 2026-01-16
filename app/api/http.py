@@ -11,6 +11,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.auth import get_current_user_email
 from app.core.container import Container
+from app.core.config import load_settings, Settings
 from app.api.schemas import UserCreateDTO, UserResponseDTO
 from app.core.exceptions import UserAlreadyExists
 from app.core.security import create_access_token
@@ -18,11 +19,14 @@ from app.core.security import create_access_token
 app = FastAPI()
 
 
+settings = load_settings()
+
 if "pytest" in sys.modules:
     _tmp_db = tempfile.NamedTemporaryFile(delete=False)
-    container = Container(_tmp_db.name)
-else:
-    container = Container("app/schemas/users.db")
+    # create a settings instance that points to the temp DB for tests
+    settings = Settings(env=settings.env, debug=settings.debug, secret_key=settings.secret_key, db_path=_tmp_db.name)
+
+container = Container(settings)
 
 
 def get_user_service():
@@ -45,7 +49,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     generation for testing and does not validate credentials.
     """
 
-    access_token = create_access_token(subject=form_data.username)
+    access_token = create_access_token(subject=form_data.username, secret_key=settings.secret_key)
     return {
         "access_token": access_token,
         "token_type": "bearer"
