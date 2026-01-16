@@ -23,18 +23,18 @@ Implement a maintainable, testable User Registration API where users can registe
 The project follows Clean Architecture: the domain layer has no framework dependencies; infrastructure and adapters can be replaced independently.
 
 ```txt
-      ┌─────────────┐
-      │   FastAPI   │  ← HTTP / JWT
-      └──────┬──────┘
-          │
-      ┌──────▼──────┐
-      │ Application │  ← Dependency Injection
-      └──────┬──────┘
-          │
-      ┌──────▼──────┐
-      │   Domain    │  ← Business Rules
-      └──────┬──────┘
-          │
+         ┌─────────────┐
+         │   FastAPI   │  ← HTTP / JWT
+         └──────┬──────┘
+                │
+         ┌──────▼──────┐
+         │ Application │  ← Dependency Injection
+         └──────┬──────┘
+                │
+         ┌──────▼──────┐
+         │   Domain    │  ← Business Rules
+         └──────┬──────┘
+                │
       ┌─────────▼─────────┐
       │ Repositories      │
       │ (Memory / SQLite) │
