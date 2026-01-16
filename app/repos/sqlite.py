@@ -29,7 +29,7 @@ class UserRepositorySQLite(UserRepository):
 
     def _create_table(self):
         self._execute(
-            "CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY)",
+            "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL)",
             commit=True
         )
 
@@ -42,8 +42,9 @@ class UserRepositorySQLite(UserRepository):
         return row is not None
 
     def save(self, user) -> None:
+        # Persist both id and email. UUIDs are stored as text.
         self._execute(
-            "INSERT INTO users (email) VALUES (?)",
-            (user.email,),
+            "INSERT INTO users (id, email) VALUES (?, ?)",
+            (str(user.id), user.email),
             commit=True
         )
