@@ -34,7 +34,7 @@ def main():
     parser.add_argument("--email", required=True)
     
     args = parser.parse_args()  
-    container = Container("app/schemas/users.db")
+    container = Container(settings)
     repo = container.user_repo()
     service = container.user_service()
     
